@@ -20,11 +20,8 @@ Sub CombineSheets()
         If ThisWorkbook.Worksheets(I).Visible = True And ThisWorkbook.Worksheets(I).Name <> "Result" Then
             With ThisWorkbook.Worksheets(I)
                 e = e + LastRow
-                Debug.Print e
                 LastCol = .Cells(13, .Columns.Count).End(xlToLeft).Column
                 LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
-                'Debug.Print LastCol
-                'Debug.Print LastRow
                 Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
                 Rng.Copy
                 With ws.Cells(e + 1, "A")
@@ -34,6 +31,5 @@ Sub CombineSheets()
             End With
         End If
     Next I
-    'NewBook.SaveAs Filename:=NewBook.Worksheets("Sheet1").Range("E3").value
+    ws.Cells.Resize(ws.Rows.Count).Columns.AutoFit
 End Sub
-
