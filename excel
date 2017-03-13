@@ -15,6 +15,7 @@ Public Function LastOccupiedRowNum(Sheet As Worksheet) As Long
     End If
     LastOccupiedRowNum = lng
 End Function
+
 Function GetName() As String
     GetName = ThisWorkbook.Name
 End Function
@@ -42,14 +43,17 @@ Sub CombineSheets()
                 LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
                 Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
                 Rng.Copy
-                With ws.Cells(LastOccupiedRowNum(ws) + 1, "A")
+                lastOccupiedRow = LastOccupiedRowNum(ws)
+                With ws.Cells(lastOccupiedRow + 1, "A")
                     .PasteSpecial xlPasteValues
                     Application.CutCopyMode = False
                 End With
-                ws.Cells(LastOccupiedRowNum(ws), "B") = ThisWorkbook.Worksheets(I).Name
+                ws.Cells(lastOccupiedRow + 1, "B").Resize(Rng.Rows.Count).Value = ThisWorkbook.Worksheets(I).Name
             End With
         End If
     Next I
+ExitTheSub:
     ws.Cells.Resize(ws.Rows.Count).Columns.AutoFit
+    Application.Goto ws.Cells(1)
 End Sub
 
