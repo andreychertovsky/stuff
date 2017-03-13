@@ -1,12 +1,10 @@
-Sub LastColumnInOneRow()
+Sub CombineSheets()
     Dim LastCol As Long
     Dim LastRow As Long
     Dim WS_Count As Integer
     Dim I As Integer
     Dim ws As Worksheet
     Dim e As Long
-    Dim frow
-    LastRow = 0
     e = 0
     Application.DisplayAlerts = False
     On Error Resume Next
@@ -27,8 +25,8 @@ Sub LastColumnInOneRow()
                 LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
                 'Debug.Print LastCol
                 'Debug.Print LastRow
-                Set rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
-                rng.Copy
+                Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
+                Rng.Copy
                 With ws.Cells(e + 1, "A")
                     .PasteSpecial xlPasteValues
                     Application.CutCopyMode = False
@@ -38,3 +36,4 @@ Sub LastColumnInOneRow()
     Next I
     'NewBook.SaveAs Filename:=NewBook.Worksheets("Sheet1").Range("E3").value
 End Sub
+
