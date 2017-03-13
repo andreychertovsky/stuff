@@ -16,11 +16,31 @@ Public Function LastOccupiedRowNum(Sheet As Worksheet) As Long
     LastOccupiedRowNum = lng
 End Function
 
-Function GetName() As String
-    GetName = ThisWorkbook.Name
+Function GetYear() As String
+    Dim regex As Object
+    Set regex = CreateObject("VBScript.RegExp") 'because no need reference every time
+    With regex
+        .Pattern = "[0-9]+"
+    End With
+    Set matches = regex.Execute(ThisWorkbook.Name)
+    For Each Match In matches
+        GetYear = Match.Value
+    Next Match
+End Function
+Function GetN() As String
+    Dim regex As Object
+    Set regex = CreateObject("VBScript.RegExp") 'because no need reference every time
+    With regex
+        .Pattern = "[?<=^| ]\d+\.\d+[?=$| ]"
+    End With
+    Set matches = regex.Execute(ThisWorkbook.Name)
+    For Each Match In matches
+        GetN = Match.Value
+    Next Match
 End Function
 Sub CombineSheets()
-    Debug.Print GetName()
+    Debug.Print GetYear()
+    Debug.Print GetN()
     Dim LastCol As Long
     Dim LastRow As Long
     Dim WS_Count As Integer
@@ -44,11 +64,13 @@ Sub CombineSheets()
                 Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
                 Rng.Copy
                 lastOccupiedRow = LastOccupiedRowNum(ws)
-                With ws.Cells(lastOccupiedRow + 1, "A")
+                With ws.Cells(lastOccupiedRow + 1, "D")
                     .PasteSpecial xlPasteValues
                     Application.CutCopyMode = False
                 End With
                 ws.Cells(lastOccupiedRow + 1, "B").Resize(Rng.Rows.Count).Value = ThisWorkbook.Worksheets(I).Name
+                ws.Cells(lastOccupiedRow + 1, "A").Resize(Rng.Rows.Count).Value = GetN()
+                ws.Cells(lastOccupiedRow + 1, "C").Resize(Rng.Rows.Count).Value = GetYear()
             End With
         End If
     Next I
