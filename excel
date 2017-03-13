@@ -77,5 +77,11 @@ Sub CombineSheets()
 ExitTheSub:
     ws.Cells.Resize(ws.Rows.Count).Columns.AutoFit
     Application.Goto ws.Cells(1)
+    With ThisWorkbook.Worksheets("Result")
+        LastCol = .Cells(2, .Columns.Count).End(xlToLeft).Column
+        LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
+        Set Rng = .Range(.Cells(2, LastCol), .Cells(LastRow, 1))
+        Rng.Select
+    End With
+        
 End Sub
-
