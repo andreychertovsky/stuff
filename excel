@@ -1,11 +1,30 @@
+Public Function LastOccupiedRowNum(Sheet As Worksheet) As Long
+    Dim lng As Long
+    If Application.WorksheetFunction.CountA(Sheet.Cells) <> 0 Then
+        With Sheet
+            lng = .Cells.Find(What:="*", _
+                              After:=.Range("A1"), _
+                              Lookat:=xlPart, _
+                              LookIn:=xlFormulas, _
+                              SearchOrder:=xlByRows, _
+                              SearchDirection:=xlPrevious, _
+                              MatchCase:=False).Row
+        End With
+    Else
+        lng = 1
+    End If
+    LastOccupiedRowNum = lng
+End Function
+Function GetName() As String
+    GetName = ThisWorkbook.Name
+End Function
 Sub CombineSheets()
+    Debug.Print GetName()
     Dim LastCol As Long
     Dim LastRow As Long
     Dim WS_Count As Integer
     Dim I As Integer
     Dim ws As Worksheet
-    Dim e As Long
-    e = 0
     Application.DisplayAlerts = False
     On Error Resume Next
     ActiveWorkbook.Worksheets("Result").Delete
@@ -19,17 +38,18 @@ Sub CombineSheets()
     For I = 1 To WS_Count
         If ThisWorkbook.Worksheets(I).Visible = True And ThisWorkbook.Worksheets(I).Name <> "Result" Then
             With ThisWorkbook.Worksheets(I)
-                e = e + LastRow
                 LastCol = .Cells(13, .Columns.Count).End(xlToLeft).Column
                 LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
                 Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
                 Rng.Copy
-                With ws.Cells(e + 1, "A")
+                With ws.Cells(LastOccupiedRowNum(ws) + 1, "A")
                     .PasteSpecial xlPasteValues
                     Application.CutCopyMode = False
                 End With
+                ws.Cells(LastOccupiedRowNum(ws), "B") = ThisWorkbook.Worksheets(I).Name
             End With
         End If
     Next I
     ws.Cells.Resize(ws.Rows.Count).Columns.AutoFit
 End Sub
+
