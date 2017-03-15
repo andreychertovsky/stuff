@@ -10,9 +10,7 @@ Sub TestMerge()
             'Debug.Print mFiles(i)
             Set wb = excelApp.Workbooks.Open(mFiles(i), ReadOnly = True)
                 For Each ws In wb.Sheets
-                    If worksheetName <> vbNullString And ws.Visible <> 0 Then
-                        If ws.Name = worksheetName Then ws.Copy After:=destWb.Sheets(destWb.Sheets.Count)
-                    Else
+                    If ws.Visible <> 0 Then
                         ws.Copy After:=destWb.Sheets(destWb.Sheets.Count)
                     End If
                 Next ws
