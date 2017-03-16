@@ -1,0 +1,51 @@
+Function RName(i) As String
+    Dim strFile As String
+    RName = Mid(i, InStrRev(i, "\") + 1, InStrRev(i, ".") - InStrRev(i, "\") - 1)
+End Function
+
+Sub TestMerge()
+    Dim mFiles As Variant, wb As Workbook, ws As Worksheet, destWb As Workbook, excelApp As Application
+    Dim i As Long
+    Set excelApp = New Application
+    Set destWb = excelApp.Workbooks.Add
+    Dim wbkToCopy As Workbook
+    mFiles = SelectMFiles()
+    If IsArray(mFiles) Then
+        For i = LBound(mFiles) To UBound(mFiles)
+            sName = RName(mFiles(i))
+            'Debug.Print sName
+            Set wb = excelApp.Workbooks.Open(mFiles(i), ReadOnly = True)
+                For Each ws In wb.Sheets
+                    If ws.Visible <> 0 Then
+                        ws.Copy After:=destWb.Sheets(destWb.Sheets.Count)
+                        destWb.Sheets(destWb.Sheets.Count).name = sName
+                    End If
+                Next ws
+            wb.Close savechanges:=False
+        Next i
+    End If
+    destWb.SaveAs ThisWorkbook.Path & "\" & "Result"
+    destWb.Close savechanges:=False
+    excelApp.Quit
+    Set destWb = Nothing: Set excelApp = Nothing
+    MsgBox "Merge completed!"
+End Sub
+Function SelectFolder() As String
+    'Return path with folder as exit point
+    Dim diaFolder As FileDialog
+    Set diaFolder = Application.FileDialog(msoFileDialogFolderPicker)
+    diaFolder.AllowMultiSelect = False
+    diaFolder.Show
+
+    'Debug.Print diaFolder.SelectedItems(1)
+    SelectFolder = diaFolder.SelectedItems(1)
+    Set diaFolder = Nothing
+End Function
+Function SelectMFiles() As Variant
+    'Return array of selected files
+    Dim vaFiles As Variant
+    vaFiles = Application.GetOpenFilename("Excel Files (*.xls;*.xlsx), *.xls;*xlsx", _
+                Title:="Select files", MultiSelect:=True)
+    SelectMFiles = vaFiles
+End Function
+
