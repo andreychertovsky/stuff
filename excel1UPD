@@ -1,0 +1,89 @@
+Public Function LastOccupiedRowNum(Sheet As Worksheet) As Long
+    'Find las occupied cell
+    Dim lng As Long
+    If Application.WorksheetFunction.CountA(Sheet.Cells) <> 0 Then
+        With Sheet
+            lng = .Cells.Find(What:="*", _
+                              After:=.Range("A1"), _
+                              Lookat:=xlPart, _
+                              LookIn:=xlFormulas, _
+                              SearchOrder:=xlByRows, _
+                              SearchDirection:=xlPrevious, _
+                              MatchCase:=False).Row
+        End With
+    Else
+        lng = 1
+    End If
+    LastOccupiedRowNum = lng
+End Function
+
+Function GetNumber(i) As String
+    'Return Number
+    Dim regex As Object
+    Set regex = CreateObject("VBScript.RegExp") 'because no need reference every time
+    With regex
+        .Pattern = "[0-9]*[.]?[0-9]+"
+    End With
+    Set matches = regex.Execute(ThisWorkbook.Worksheets(i).Name)
+    For Each Match In matches
+        GetNumber = Match.Value
+        'Debug.Print GetNumber
+    Next Match
+End Function
+Function GetMonth(i) As String
+    'Return Month
+    Dim regex As Object
+    Set regex = CreateObject("VBScript.RegExp") 'because no need reference every time
+    With regex
+        .Pattern = "[^\u0000-\u007F]+"
+    End With
+    Set matches = regex.Execute(ThisWorkbook.Worksheets(i).Name)
+    For Each Match In matches
+        GetMonth = Match.Value
+        'Debug.Print GetMonth
+    Next Match
+End Function
+Sub CombineSheets()
+    Dim LastCol As Long
+    Dim LastRow As Long
+    Dim WS_Count As Integer
+    Dim i As Integer
+    Dim ws As Worksheet
+    Application.DisplayAlerts = False
+    On Error Resume Next
+    ActiveWorkbook.Worksheets("Result").Delete
+    On Error GoTo 0
+    Application.DisplayAlerts = True
+    Set ws = ThisWorkbook.Sheets.Add(After:= _
+             ThisWorkbook.Sheets(ThisWorkbook.Sheets.Count))
+    ws.Name = "Result"
+    WS_Count = ThisWorkbook.Worksheets.Count
+    
+    For i = 1 To WS_Count
+        If ThisWorkbook.Worksheets(i).Visible = True And ThisWorkbook.Worksheets(i).Name <> "Result" And ThisWorkbook.Worksheets(i).Name <> "Ëèñò1" Then
+            With ThisWorkbook.Worksheets(i)
+                LastCol = .Cells(13, .Columns.Count).End(xlToLeft).Column
+                LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
+                Set Rng = .Range(.Cells(15, LastCol), .Cells(LastRow - 1, 1))
+                Rng.Copy
+                lastOccupiedRow = LastOccupiedRowNum(ws)
+                With ws.Cells(lastOccupiedRow + 1, "D")
+                    .PasteSpecial xlPasteValues
+                    Application.CutCopyMode = False
+                End With
+                ws.Cells(lastOccupiedRow + 1, "A").Resize(Rng.Rows.Count).Value = ThisWorkbook.Worksheets(i).Name
+                ws.Cells(lastOccupiedRow + 1, "B").Resize(Rng.Rows.Count).Value = GetMonth(i)
+                ws.Cells(lastOccupiedRow + 1, "C").Resize(Rng.Rows.Count).Value = GetNumber(i)
+            End With
+        End If
+    Next i
+ExitTheSub:
+    ws.Cells.Resize(ws.Rows.Count).Columns.AutoFit
+    Application.Goto ws.Cells(1)
+    With ThisWorkbook.Worksheets("Result")
+        LastCol = .Cells(2, .Columns.Count).End(xlToLeft).Column
+        LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
+        Set Rng = .Range(.Cells(2, LastCol), .Cells(LastRow, 1))
+        Rng.Select
+    End With
+End Sub
