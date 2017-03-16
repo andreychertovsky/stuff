@@ -60,7 +60,7 @@ Sub CombineSheets()
     WS_Count = ThisWorkbook.Worksheets.Count
     
     For i = 1 To WS_Count
-        If ThisWorkbook.Worksheets(i).Visible = True And ThisWorkbook.Worksheets(i).Name <> "Result" And ThisWorkbook.Worksheets(i).Name <> "Ëèñò1" Then
+        If ThisWorkbook.Worksheets(i).Visible = True And ThisWorkbook.Worksheets(i).Name <> "Result" And ThisWorkbook.Worksheets(i).Name <> "Sheet1" Then
             With ThisWorkbook.Worksheets(i)
                 LastCol = .Cells(13, .Columns.Count).End(xlToLeft).Column
                 LastRow = .Cells(.Rows.Count, "A").End(xlUp).Row
