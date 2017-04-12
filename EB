@@ -1,0 +1,30 @@
+Sub Test()
+    Dim Arr() As String
+    Dim I, J, C As Long
+    Dim summary As Long
+    Dim fnext As Range
+    Dim firstTime, secondTime, workTime As Date
+    rcount = ActiveSheet.Range("A" & Rows.Count).End(xlUp).Row 'rows count
+    J = 5
+    summary = 5
+    For I = 5 To rcount
+        C = 0
+        innerTime = ActiveSheet.Range("B" & I).Value
+        enterName = ActiveSheet.Range("A" & I).Value
+        Do While innerTime = ActiveSheet.Range("B" & J).Value
+            If ActiveSheet.Cells(J, 1) = enterName Then
+                
+            C = C + 1
+            End If
+            J = J + 1
+            summary = summary + 1
+        Loop
+        If summary = I Then
+            J = summary
+        Else
+            J = 5
+        End If
+        summary = 5
+        'J = 5
+    Next I
+End Sub
