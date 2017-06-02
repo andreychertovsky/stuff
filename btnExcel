@@ -1,0 +1,43 @@
+Sub Button_run()
+
+    Dim fDate As Date
+    Dim lDate As Date
+    Dim dateLoop As Date
+    Dim rCount As Integer
+    Dim I As Long
+    
+    
+    Set wb = ActiveWorkbook
+    Set wsDefect = wb.Sheets("æóðíàë äåôåêòîâ")
+    Set wsReport = wb.Sheets("Îò÷¸ò")
+    
+    
+    rCount = wsDefect.Range("B" & Rows.Count).End(xlUp).Row 'count row in defect sheet
+    Debug.Print rCount
+    
+    fDate = Cells(5, "C").Value
+    lDate = Cells(5, "D").Value
+    
+    If fDate = 0 Or lDate = 0 Then
+        MsgBox "Range is empty"
+        Exit Sub
+    End If
+    
+    
+    For I = 2 To rCount
+        With wsDefect
+            .Select
+            For dateLoop = fDate To lDate
+                If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
+                    Debug.Print Cells(I, "B").Value
+                End If
+            Next dateLoop
+        End With
+    Next I
+    
+    'For dateLoop = fDate To lDate
+        'MsgBox (dateLoop)
+    'Next dateLoop
+    
+    'Debug.Print "First date: " & fDate & "Second date: " & lDate
+End Sub
