@@ -3,8 +3,9 @@ Sub Button_run()
     Dim fDate As Date
     Dim lDate As Date
     Dim dateLoop As Date
-    Dim rCount As Integer
+    Dim rCount As Long
     Dim I As Long
+    Dim defectCount As Long
     
     
     Set wb = ActiveWorkbook
@@ -23,18 +24,26 @@ Sub Button_run()
         Exit Sub
     End If
     
-    
+    defectCount = 0
     For I = 2 To rCount
         With wsDefect
             .Select
             For dateLoop = fDate To lDate
                 If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
-                    Debug.Print Cells(I, "B").Value
+                    'Debug.Print Cells(I, "B").Value
+                    defectCount = defectCount + 1
                 End If
             Next dateLoop
         End With
     Next I
     
+ExitTheSub:
+    With wsReport
+        .Select
+        'Debug.Print defectCount
+        Cells(5, "E").Value = defectCount
+        MsgBox "All Done"
+    End With
     'For dateLoop = fDate To lDate
         'MsgBox (dateLoop)
     'Next dateLoop
