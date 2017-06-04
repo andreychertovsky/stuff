@@ -5,16 +5,13 @@ Sub Button_run()
     Dim dateLoop As Date
     Dim rCount As Long
     Dim I As Long
-    Dim defectCount As Long
-    
-    
+    Dim defectCount, planCount, stopCount As Long
+      
     Set wb = ActiveWorkbook
     Set wsDefect = wb.Sheets("æóðíàë äåôåêòîâ")
     Set wsReport = wb.Sheets("Îò÷¸ò")
-    
-    
+        
     rCount = wsDefect.Range("B" & Rows.Count).End(xlUp).Row 'count row in defect sheet
-    Debug.Print rCount
     
     fDate = Cells(5, "C").Value
     lDate = Cells(5, "D").Value
@@ -24,29 +21,46 @@ Sub Button_run()
         Exit Sub
     End If
     
+    'all defect in particular range
     defectCount = 0
     For I = 2 To rCount
         With wsDefect
             .Select
             For dateLoop = fDate To lDate
                 If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
-                    'Debug.Print Cells(I, "B").Value
                     defectCount = defectCount + 1
                 End If
             Next dateLoop
         End With
     Next I
     
+    'fix all defect in range
+    planCount = 0
+    stopCount = 0
+    For I = 2 To rCount
+        With wsDefect
+            .Select
+            If Cells(I, "K").Value = "" Then
+            ElseIf Cells(I, "K").Value = "âî âðåìÿ îñòàíîâêè" Then
+                stopCount = stopCount + 1
+            Else
+                For dateLoop = fDate To lDate
+                Debug.Print Cells(I, "K")
+                    If DateDiff("d", Cells(I, "K").Value, dateLoop) = 0 Then
+                        planCount = planCount + 1
+                    End If
+                Next dateLoop
+            End If
+        End With
+    Next I
+    
 ExitTheSub:
     With wsReport
         .Select
-        'Debug.Print defectCount
         Cells(5, "E").Value = defectCount
+        Cells(5, "F").Value = planCount
+        Cells(5, "H").Value = stopCount
         MsgBox "All Done"
     End With
-    'For dateLoop = fDate To lDate
-        'MsgBox (dateLoop)
-    'Next dateLoop
-    
-    'Debug.Print "First date: " & fDate & "Second date: " & lDate
 End Sub
+
