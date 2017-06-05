@@ -5,7 +5,7 @@ Sub Button_run()
     Dim dateLoop As Date
     Dim rCount As Long
     Dim I As Long
-    Dim defectCount, planCount, stopCount, fixCount, fixAfter As Long
+    Dim defectCount, planCount, stopCount, fixCount, fixAfter, revealFix As Long
       
     Set wb = ActiveWorkbook
     Set wsDefect = wb.Sheets("æóðíàë äåôåêòîâ")
@@ -81,6 +81,22 @@ Sub Button_run()
         End With
     Next I
     
+    'revealed defect fix
+    revealFix = 0
+    For I = 2 To rCount
+        With wsDefect
+            .Select
+            If Cells(I, "N") = "" Then
+            Else
+                For dateLoop = fDate To lDate
+                    If DateDiff("d", Cells(I, "K").Value, dateLoop) = 0 And Cells(I, "N").Value <= DateValue(lDate) Then
+                        revealFix = revealFix + 1
+                    End If
+                Next dateLoop
+            End If
+        End With
+    Next I
+    
 ExitTheSub:
     With wsReport
         .Select
@@ -89,6 +105,7 @@ ExitTheSub:
         Cells(5, "G").Value = fixAfter
         Cells(5, "H").Value = stopCount
         Cells(5, "I").Value = fixCount
+        Cells(5, "J").Value = revealFix
         MsgBox "All Done"
     End With
 End Sub
