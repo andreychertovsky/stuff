@@ -1,5 +1,5 @@
 Sub Button_run()
-
+    Dim num As Integer
     Dim fDate As Date
     Dim lDate As Date
     Dim dateLoop As Date
@@ -13,8 +13,14 @@ Sub Button_run()
         
     rCount = wsDefect.Range("B" & Rows.Count).End(xlUp).Row 'count row in defect sheet
     
-    fDate = Cells(5, "C").Value
-    lDate = Cells(5, "D").Value
+    num = InputBox("Enter row number")
+    If 5 > num Or num > 11 Then
+        MsgBox "Range must be from 5 to 11"
+        Exit Sub
+    End If
+    
+    fDate = Cells(num, "C").Value
+    lDate = Cells(num, "D").Value
     
     If fDate = 0 Or lDate = 0 Then
         MsgBox "Range is empty"
@@ -100,12 +106,17 @@ Sub Button_run()
 ExitTheSub:
     With wsReport
         .Select
-        Cells(5, "E").Value = defectCount
-        Cells(5, "F").Value = planCount
-        Cells(5, "G").Value = fixAfter
-        Cells(5, "H").Value = stopCount
-        Cells(5, "I").Value = fixCount
-        Cells(5, "J").Value = revealFix
+        Cells(num, "E").Value = defectCount
+        Cells(num, "F").Value = planCount
+        Cells(num, "G").Value = fixAfter
+        Cells(num, "H").Value = stopCount
+        Cells(num, "I").Value = fixCount
+        Cells(num, "J").Value = revealFix
+        If Cells(num, "E") <> 0 Then
+            Cells(num, "L").Value = Cells(num, "I") / Cells(num, "E")
+        Else
+            Cells(num, "L").Value = "ND"
+        End If
         MsgBox "All Done"
     End With
 End Sub
