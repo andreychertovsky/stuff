@@ -5,7 +5,7 @@ Sub Button_run()
     Dim dateLoop As Date
     Dim rCount As Long
     Dim I As Long
-    Dim defectCount, planCount, stopCount, fixCount, fixAfter, revealFix As Long
+    Dim defectCount, planCount, stopCount, fixCount, fixAfter, revealFix, duplicateCount As Long
       
     Set wb = ActiveWorkbook
     Set wsDefect = wb.Sheets("æóðíàë äåôåêòîâ")
@@ -103,6 +103,23 @@ Sub Button_run()
         End With
     Next I
     
+    'duplicate count
+    duplicateCount = 0
+    For I = 2 To rCount
+            With wsDefect
+                .Select
+                For dateLoop = fDate To lDate
+                    If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
+                        Debug.Print Cells(I, "B")
+                        If Cells(I, "D") = Cells(I + 1, "D") Then
+                            Debug.Print Cells(I, "D")
+                            duplicateCount = duplicateCount + 1
+                        End If
+                    End If
+                Next dateLoop
+            End With
+    Next I
+    
 ExitTheSub:
     With wsReport
         .Select
@@ -112,6 +129,7 @@ ExitTheSub:
         Cells(num, "H").Value = stopCount
         Cells(num, "I").Value = fixCount
         Cells(num, "J").Value = revealFix
+        Cells(num, "K").Value = duplicateCount
         If Cells(num, "E") <> 0 Then
             Cells(num, "L").Value = Cells(num, "I") / Cells(num, "E")
         Else
