@@ -105,20 +105,41 @@ Sub Button_run()
     
     'duplicate count
     duplicateCount = 0
+    Dim col As New Collection
     For I = 2 To rCount
             With wsDefect
                 .Select
                 For dateLoop = fDate To lDate
                     If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
-                        Debug.Print Cells(I, "B")
-                        If Cells(I, "D") = Cells(I + 1, "D") Then
-                            Debug.Print Cells(I, "D")
-                            duplicateCount = duplicateCount + 1
-                        End If
+                        col.Add Cells(I, "D").Value
                     End If
                 Next dateLoop
             End With
     Next I
+    
+    
+    'implement sort
+    Dim j As Long
+    Dim temp, tempName
+    temp = 0
+    For j = 1 To col.Count
+        Debug.Print col(j)
+        If tempName <> "" And col(j) = tempName Then
+            Exit For
+        End If
+        For k = j + 1 To col.Count
+            If col(j) = col(k) Then
+                temp = temp + 1
+                tempName = col(k)
+            End If
+        Next k
+        Debug.Print temp
+        If temp >= 1 Then
+            duplicateCount = duplicateCount + 1
+            temp = 0
+        End If
+    Next j
+
     
 ExitTheSub:
     With wsReport
