@@ -12,10 +12,11 @@ Sub Button_run()
     Set wsReport = wb.Sheets("Îò÷¸ò")
         
     rCount = wsDefect.Range("B" & Rows.Count).End(xlUp).Row 'count row in defect sheet
-    
-    num = InputBox("Enter row number")
+    Range("C15:C25").Select
+    Selection.ClearContents
+    num = InputBox("Âåäèòå íîìåð ñòðîêè:")
     If 5 > num Or num > 11 Then
-        MsgBox "Range must be from 5 to 11"
+        MsgBox "Íåâåðíûé íîìåð ñòðîêè."
         Exit Sub
     End If
     
@@ -23,9 +24,11 @@ Sub Button_run()
     lDate = Cells(num, "D").Value
     
     If fDate = 0 Or lDate = 0 Then
-        MsgBox "Range is empty"
+        MsgBox "Äèàïàçîí ïóñò"
         Exit Sub
     End If
+    
+    ActiveSheet.Range(Cells(num, "C"), Cells(num, "D")).Select
     
     'all defect in particular range
     defectCount = 0
@@ -104,43 +107,55 @@ Sub Button_run()
     Next I
     
     'duplicate count
-    duplicateCount = 0
-    Dim col As New Collection
+    Dim aArray() As String
+    ReDim aArray(1 To 1) As String
     For I = 2 To rCount
             With wsDefect
                 .Select
                 For dateLoop = fDate To lDate
                     If DateDiff("d", Cells(I, "B").Value, dateLoop) = 0 Then
-                        col.Add Cells(I, "D").Value
+                        aArray(UBound(aArray)) = Cells(I, "D").Value
+                        ReDim Preserve aArray(1 To UBound(aArray) + 1) As String
                     End If
                 Next dateLoop
             End With
     Next I
     
-    
-    'implement sort
-    Dim j As Long
+    Dim temp1, temp2 As String
+    For p = LBound(aArray) To UBound(aArray)
+        For q = p To UBound(aArray)
+            If UCase(aArray(q)) < UCase(aArray(p)) Then
+                temp1 = aArray(p)
+                temp2 = aArray(q)
+                aArray(p) = temp2
+                aArray(q) = temp1
+            End If
+        Next q
+    Next p
+
     Dim temp, tempName
     temp = 0
-    For j = 1 To col.Count
-        Debug.Print col(j)
-        If tempName <> "" And col(j) = tempName Then
-            Exit For
-        End If
-        For k = j + 1 To col.Count
-            If col(j) = col(k) Then
-                temp = temp + 1
-                tempName = col(k)
+    duplicateCount = 0
+    For x = LBound(aArray) To UBound(aArray)
+        'Debug.Print aArray(x)
+        If tempName <> "" And aArray(x) = tempName Then
+        Else
+            For y = x + 1 To UBound(aArray)
+                If aArray(x) = aArray(y) Then
+                    temp = temp + 1
+                    tempName = aArray(y)
+                End If
+            Next y
+            If temp >= 1 Then
+                'Debug.Print aArray(x)
+                wsReport.Cells(15 + duplicateCount, "C").Value = aArray(x)
+                duplicateCount = duplicateCount + 1
+                temp = 0
             End If
-        Next k
-        Debug.Print temp
-        If temp >= 1 Then
-            duplicateCount = duplicateCount + 1
-            temp = 0
         End If
-    Next j
-
+    Next x
     
+
 ExitTheSub:
     With wsReport
         .Select
@@ -156,7 +171,8 @@ ExitTheSub:
         Else
             Cells(num, "L").Value = "ND"
         End If
-        MsgBox "All Done"
+        'ActiveSheet.Range("C15:C25").Value = WorksheetFunction.Transpose(aArray)
+        MsgBox "Ãîòîâî"
     End With
 End Sub
 
